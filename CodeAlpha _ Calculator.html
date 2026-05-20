@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!-- saved from url=(0190)file:///C:/Users/Kavitha%20seervi/AppData/Local/Packages/5319275A.WhatsAppDesktop_cv1g1gvanyjgm/LocalState/sessions/72F6C72BF087C47AC96198E901200698CA038065/transfers/2026-21/calculator.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeAlpha | Calculator</title>
+  <link href="./CodeAlpha _ Calculator_files/css2" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --calc-bg: #1a1a2e;
+      --display-bg: #0d0d1a;
+      --btn-bg: #252540;
+      --btn-hover: #2e2e52;
+      --btn-active-scale: 0.94;
+      --accent: #e8b84b;
+      --accent2: #ff6b6b;
+      --op-bg: #2a2048;
+      --op-hover: #352660;
+      --text-main: #f0ece4;
+      --text-muted: #7a7a9a;
+      --equal-bg: #e8b84b;
+      --equal-hover: #f0c96a;
+      --clear-bg: #ff6b6b;
+      --clear-hover: #ff8585;
+      --radius: 20px;
+      --btn-radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      padding: 20px;
+    }
+
+    .page-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 24px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .calculator {
+      background: var(--calc-bg);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+    }
+
+    /* DISPLAY */
+    .display {
+      background: var(--display-bg);
+      border-radius: 12px;
+      padding: 20px 20px 14px;
+      margin-bottom: 20px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-end;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .display::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(232,184,75,0.4), transparent);
+    }
+
+    .expression {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      min-height: 18px;
+      word-break: break-all;
+      text-align: right;
+    }
+
+    .result {
+      font-family: 'Space Mono', monospace;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-all;
+      text-align: right;
+      line-height: 1.1;
+      transition: font-size 0.15s ease;
+    }
+
+    .result.small { font-size: 1.8rem; }
+    .result.error { color: var(--accent2); font-size: 1.2rem; }
+
+    /* KEYBOARD HINT */
+    .kb-hint {
+      font-size: 0.65rem;
+      color: #444466;
+      text-align: right;
+      margin-bottom: 10px;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    /* BUTTONS GRID */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--btn-bg);
+      border: none;
+      border-radius: var(--btn-radius);
+      color: var(--text-main);
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 0;
+      height: 64px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .btn:hover { background: var(--btn-hover); }
+    .btn:active { transform: scale(var(--btn-active-scale)); }
+
+    .btn.op {
+      background: var(--op-bg);
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+    .btn.op:hover { background: var(--op-hover); }
+
+    .btn.clear {
+      background: rgba(255,107,107,0.15);
+      color: var(--clear-bg);
+      border-color: rgba(255,107,107,0.2);
+    }
+    .btn.clear:hover { background: rgba(255,107,107,0.25); }
+
+    .btn.backspace {
+      background: rgba(255,107,107,0.08);
+      color: #ff9999;
+      font-size: 1.1rem;
+    }
+    .btn.backspace:hover { background: rgba(255,107,107,0.16); }
+
+    .btn.percent {
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    .btn.equals {
+      background: var(--equal-bg);
+      color: #1a1a2e;
+      font-size: 1.4rem;
+      grid-column: span 2;
+      box-shadow: 0 4px 20px rgba(232,184,75,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn.equals:hover { background: var(--equal-hover); box-shadow: 0 6px 24px rgba(232,184,75,0.4); }
+
+    .btn.zero {
+      grid-column: span 2;
+    }
+
+    /* ripple */
+    .btn .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-anim 0.5s linear;
+      background: rgba(255,255,255,0.08);
+      pointer-events: none;
+    }
+
+    @keyframes ripple-anim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* pressed glow for equal */
+    .btn.equals.flash {
+      animation: flash 0.2s ease;
+    }
+
+    @keyframes flash {
+      0% { box-shadow: 0 4px 20px rgba(232,184,75,0.3); }
+      50% { box-shadow: 0 0 40px rgba(232,184,75,0.8); }
+      100% { box-shadow: 0 4px 20px rgba(232,184,75,0.3); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 400px) {
+      .calculator { padding: 20px; }
+      .btn { height: 56px; font-size: 0.9rem; }
+      .result { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-title">CodeAlpha — Task 2</div>
+
+<div class="calculator">
+  <div class="display">
+    <div class="expression" id="expression"></div>
+    <div class="result" id="result">0</div>
+  </div>
+  <div class="kb-hint">⌨ Keyboard supported</div>
+  <div class="btn-grid">
+    <button class="btn clear" data-action="clear">AC</button>
+    <button class="btn backspace" data-action="backspace">⌫</button>
+    <button class="btn percent" data-action="percent">%</button>
+    <button class="btn op" data-action="op" data-value="÷">÷</button>
+
+    <button class="btn" data-action="num" data-value="7">7</button>
+    <button class="btn" data-action="num" data-value="8">8</button>
+    <button class="btn" data-action="num" data-value="9">9</button>
+    <button class="btn op" data-action="op" data-value="×">×</button>
+
+    <button class="btn" data-action="num" data-value="4">4</button>
+    <button class="btn" data-action="num" data-value="5">5</button>
+    <button class="btn" data-action="num" data-value="6">6</button>
+    <button class="btn op" data-action="op" data-value="−">−</button>
+
+    <button class="btn" data-action="num" data-value="1">1</button>
+    <button class="btn" data-action="num" data-value="2">2</button>
+    <button class="btn" data-action="num" data-value="3">3</button>
+    <button class="btn op" data-action="op" data-value="+">+</button>
+
+    <button class="btn zero" data-action="num" data-value="0">0</button>
+    <button class="btn" data-action="decimal">.</button>
+    <button class="btn equals" data-action="equals">=</button>
+  </div>
+</div>
+
+<script>
+  let current = '0';
+  let expression = '';
+  let operator = null;
+  let prevValue = null;
+  let justCalculated = false;
+
+  const resultEl = document.getElementById('result');
+  const expressionEl = document.getElementById('expression');
+
+  function updateDisplay() {
+    resultEl.textContent = current;
+    const len = current.length;
+    resultEl.classList.remove('small', 'error');
+    if (len > 12) resultEl.classList.add('small');
+    expressionEl.textContent = expression;
+  }
+
+  function inputNum(val) {
+    if (justCalculated) {
+      current = val;
+      expression = '';
+      justCalculated = false;
+    } else {
+      if (current === '0' && val !== '.') current = val;
+      else if (current.length < 15) current += val;
+    }
+    updateDisplay();
+  }
+
+  function inputDecimal() {
+    if (justCalculated) { current = '0.'; justCalculated = false; }
+    else if (!current.includes('.')) current += '.';
+    updateDisplay();
+  }
+
+  function inputOp(op) {
+    justCalculated = false;
+    if (prevValue !== null && operator) {
+      calculate(false);
+    }
+    prevValue = parseFloat(current);
+    operator = op;
+    expression = `${current} ${op}`;
+    current = '0';
+    updateDisplay();
+  }
+
+  function calculate(final = true) {
+    if (prevValue === null || !operator) return;
+    const cur = parseFloat(current);
+    let res;
+    switch (operator) {
+      case '+':  res = prevValue + cur; break;
+      case '−':  res = prevValue - cur; break;
+      case '×':  res = prevValue * cur; break;
+      case '÷':
+        if (cur === 0) { showError('Cannot ÷ 0'); return; }
+        res = prevValue / cur;
+        break;
+    }
+    if (final) {
+      expression = `${prevValue} ${operator} ${cur} =`;
+      prevValue = null;
+      operator = null;
+      justCalculated = true;
+    }
+    // round float errors
+    current = parseFloat(res.toPrecision(12)).toString();
+    updateDisplay();
+  }
+
+  function showError(msg) {
+    resultEl.textContent = msg;
+    resultEl.classList.add('error');
+    expression = '';
+    prevValue = null; operator = null; current = '0';
+    justCalculated = true;
+  }
+
+  function handlePercent() {
+    const val = parseFloat(current);
+    if (prevValue !== null && operator) {
+      current = ((prevValue * val) / 100).toString();
+    } else {
+      current = (val / 100).toString();
+    }
+    updateDisplay();
+  }
+
+  function handleBackspace() {
+    if (justCalculated) return;
+    if (current.length > 1) current = current.slice(0, -1);
+    else current = '0';
+    updateDisplay();
+  }
+
+  function handleClear() {
+    current = '0'; expression = ''; operator = null; prevValue = null; justCalculated = false;
+    resultEl.classList.remove('error');
+    updateDisplay();
+  }
+
+  // Button click
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      // ripple
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      r.style.width = r.style.height = size + 'px';
+      r.style.left = (e.clientX - rect.left - size/2) + 'px';
+      r.style.top = (e.clientY - rect.top - size/2) + 'px';
+      this.appendChild(r);
+      setTimeout(() => r.remove(), 500);
+
+      const { action, value } = this.dataset;
+      if (action === 'num') inputNum(value);
+      else if (action === 'op') inputOp(value);
+      else if (action === 'decimal') inputDecimal();
+      else if (action === 'percent') handlePercent();
+      else if (action === 'backspace') handleBackspace();
+      else if (action === 'clear') handleClear();
+      else if (action === 'equals') {
+        calculate();
+        const eqBtn = document.querySelector('.btn.equals');
+        eqBtn.classList.remove('flash');
+        void eqBtn.offsetWidth;
+        eqBtn.classList.add('flash');
+      }
+    });
+  });
+
+  // Keyboard support
+  document.addEventListener('keydown', e => {
+    if (e.key >= '0' && e.key <= '9') inputNum(e.key);
+    else if (e.key === '.') inputDecimal();
+    else if (e.key === '+') inputOp('+');
+    else if (e.key === '-') inputOp('−');
+    else if (e.key === '*') inputOp('×');
+    else if (e.key === '/') { e.preventDefault(); inputOp('÷'); }
+    else if (e.key === '%') handlePercent();
+    else if (e.key === 'Enter' || e.key === '=') calculate();
+    else if (e.key === 'Backspace') handleBackspace();
+    else if (e.key === 'Escape' || e.key === 'Delete') handleClear();
+  });
+
+  updateDisplay();
+</script>
+
+
+</body></html>
